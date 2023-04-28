@@ -1,0 +1,27 @@
+import { atom } from "recoil";
+
+const sideMenuforUser = atom({
+  key: "sideMenuforUser",
+  default: {
+    menuforUser: [
+      {
+        icon: "Home",
+        pathname: "/order-management",
+        title: "Order Management"
+      },
+
+      {
+        icon: "PackagePlus",
+        pathname: "/create-sales-order",
+        title: "Create Sales Order"
+      },
+      {
+        icon: "ClipboardCheck",
+        pathname: "/invoices",
+        title: "Invoice History"
+      }
+    ]
+  }
+});
+
+export { sideMenuforUser };
