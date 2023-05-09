@@ -5,6 +5,7 @@ import OrderManagementSaga from "./orderManagement/saga";
 import ProductListSaga from "./productList/saga";
 import SalesOrderListSaga from "./salesOrderList/saga";
 import authSaga from "./login/saga";
+import watchAccountStatement from "./accountStatement/saga";
 
 //public
 
@@ -15,6 +16,7 @@ export default function* rootSaga() {
     fork(ProductListSaga),
     fork(SalesOrderListSaga),
     fork(authSaga),
-    fork(InvoicesSaga)
+    fork(InvoicesSaga),
+    fork(watchAccountStatement)
   ]);
 }

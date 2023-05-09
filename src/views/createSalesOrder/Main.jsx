@@ -84,7 +84,7 @@ function Main() {
   const loadMoreOptions = async (searchValue, loadedOptions, { page }) => {
     dispatch(onGetProductList(`?perPage=10&page=${currentPage + 1}`));
     PopulateProducts(productList.ItemsList);
-    setCurrentPage(page + 1);
+    setCurrentPage(currentPage + 1);
     return {
       options: getProductList,
       hasMore: getProductList.length <= productList.TotalRecords

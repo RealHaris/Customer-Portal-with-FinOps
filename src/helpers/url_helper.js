@@ -79,3 +79,5 @@ export const GET_VENDOR_LIST = "/vendor";
 export const CHANGE_PASSWORD = "/user/changePassword";
 
 export const GET_INVOICES = "/invoice";
+
+export const ACCOUNT_STATEMENT = "/user/accountStatement";

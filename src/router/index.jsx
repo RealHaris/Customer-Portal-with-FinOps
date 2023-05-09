@@ -1,3 +1,4 @@
+import AccountStatement from "../views/accountStatement/Main";
 import ErrorPage from "../views/errorPage/Main";
 import ForgotPassword from "../views/forgotPassword/Main";
 import Invoices from "../views/Invoices/Main";
@@ -21,6 +22,11 @@ const authProtectedRoutes = [
   {
     path: "/invoices",
     component: Invoices,
+    role: "customer"
+  },
+  {
+    path: "/account-statement",
+    component: AccountStatement,
     role: "customer"
   }
 ];

@@ -19,6 +19,11 @@ const sideMenuforUser = atom({
         icon: "ClipboardCheck",
         pathname: "/invoices",
         title: "Invoice History"
+      },
+      {
+        icon: "User",
+        pathname: "/account-statement",
+        title: "Account Statement"
       }
     ]
   }

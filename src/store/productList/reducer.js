@@ -10,6 +10,7 @@ import {
   CLEAR_SINGLE_IMAGE,
   DELETE_PRODUCT_LIST_FAIL,
   DELETE_PRODUCT_LIST_SUCCESS,
+  GET_PRODUCT_LIST,
   GET_PRODUCT_LIST_FAIL,
   GET_PRODUCT_LIST_SUCCESS,
   QUANTITY_CHANGE,
@@ -28,6 +29,8 @@ const INIT_STATE = {
   productList: null,
   QuantityofEachProduct: [],
   loading: false,
+  fetching: false,
+  fetched: false,
   error: null,
   added: false,
   updated: false,
@@ -157,34 +160,33 @@ const ProductListReducer = (state = INIT_STATE, action) => {
         QuantityofEachProduct: cartRecordv2
       };
 
-    case GET_PRODUCT_LIST_SUCCESS:
-      // options from product list
-      // let options = action.payload.data.map((item) => {
-      //   return {
-      //     value: item.code,
-      //     label: item.name
-      //   };
-      // });
+    case GET_PRODUCT_LIST:
+      return {
+        ...state,
+        fetching: true,
+        fetched: false
+      };
 
-      return action.payload
-        ? {
-            ...state,
-            productList: action.payload
-          }
-        : {
-            ...state,
-            productList: { message: "No Content Found" }
-          };
+    case GET_PRODUCT_LIST_SUCCESS:
+      return {
+        ...state,
+        fetching: false,
+        fetched: true,
+        productList: action.payload
+      };
 
     case GET_PRODUCT_LIST_FAIL:
       return {
         ...state,
+        fetching: false,
+        fetched: false,
         error: action.payload
       };
 
     case UPDATE_PRODUCT_LIST:
       return {
         ...state,
+        fetching: true,
         updated: false
       };
 

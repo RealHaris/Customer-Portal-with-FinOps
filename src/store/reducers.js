@@ -1,3 +1,4 @@
+import AccountStatementReducer from "./accountStatement/reducer";
 import InvoicesReducer from "./Invoices/reducer";
 import LoginReducer from "./login/reducer";
 import OrderManagementReducer from "./orderManagement/reducer";
@@ -10,7 +11,8 @@ const rootReducer = combineReducers({
   ProductListReducer,
   SalesOrderListReducer,
   LoginReducer,
-  InvoicesReducer
+  InvoicesReducer,
+  AccountStatementReducer
 });
 
 export default rootReducer;

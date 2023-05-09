@@ -41,7 +41,7 @@ function* loginUser({ payload: { user, history } }) {
       yield put(apiError(response));
     } else if (response?.Success === false) {
       toastr.error("Invalid Credentials");
-      yield put(apiError(error));
+      yield put(apiError(response));
     } else if (response?.data?.Success === true) {
       if (
         response?.access_token !== null &&
@@ -60,7 +60,7 @@ function* loginUser({ payload: { user, history } }) {
         history("/order-management");
       } else {
         toastr.error("Invalid Credentials");
-        yield put(apiError(error));
+        yield put(apiError(response));
       }
     }
   } catch (error) {

@@ -214,6 +214,8 @@ const getInvoicesCall = async (params) => await get(url.GET_INVOICES + params);
 const getSpecificInvoiceCall = async (params) =>
   await get(url.GET_INVOICES + "/specific/" + params);
 
+const getAccountStatement = async (params) => await get(url.ACCOUNT_STATEMENT + params);
+
 export {
   getOrderManagement,
   addNewOrderManagement,
@@ -263,5 +265,6 @@ export {
   ResetPasswordCall,
   ChangePasswordCall,
   getInvoicesCall,
-  getSpecificInvoiceCall
+  getSpecificInvoiceCall,
+  getAccountStatement
 };

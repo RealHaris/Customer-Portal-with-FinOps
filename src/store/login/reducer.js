@@ -52,7 +52,9 @@ const loginReducer = (state = initialState, action) => {
       state = { ...state };
       break;
     case API_ERROR:
-      state = { ...state, error: action.payload, loading: false };
+      console.log("API_ERROR", action.payload);
+
+      return { ...state, error: action.payload, loading: false };
       break;
 
     case VERIFY_EMAIL:

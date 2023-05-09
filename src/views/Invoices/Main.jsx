@@ -263,12 +263,12 @@ function Main() {
                     <thead>
                       <tr>
                         <th className="whitespace-nowrap">Item Id</th>
+                        <th className="whitespace-nowrap text-center">Item Name</th>
                         <th className="whitespace-nowrap text-center">Disc Amount</th>
                         <th className="whitespace-nowrap text-center">Invoice Qty</th>
                         <th className="whitespace-nowrap text-center">Unit of Measure</th>
                         <th className="whitespace-nowrap text-center">Line Amount</th>
                         <th className="whitespace-nowrap text-center">Price</th>
-                        <th className="whitespace-nowrap text-center">Tax</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -284,6 +284,7 @@ function Main() {
                                       </div>
                                     </div>
                                   </td>
+                                  <td className="text-center">{value.ItemName || "N/A"}</td>
                                   <td className="text-center">
                                     {$h.formatCurrency(value?.DiscAmount)}
                                   </td>
@@ -295,7 +296,6 @@ function Main() {
                                   <td className="text-center">
                                     {$h.formatCurrency(value?.Price) || "N/A"}
                                   </td>
-                                  <td className="text-center">{value.lineAmountTax}</td>
                                 </tr>
                               );
                             })
