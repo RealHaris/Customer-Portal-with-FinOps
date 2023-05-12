@@ -84,6 +84,8 @@ function Main() {
                 <th className="text-center whitespace-nowrap">CUSTOMER ACCOUNT</th>
                 <th className="text-center whitespace-nowrap">CUSTOMER NAME</th>
                 <th className="text-center whitespace-nowrap">SALES ORDER STATUS</th>
+                <th className="text-center whitespace-nowrap">INVOICE STATUS</th>
+
                 <th className="text-center whitespace-nowrap">INVOICE DATE</th>
                 <th className="text-center whitespace-nowrap">INVOICE QTY</th>
                 <th className="text-center whitespace-nowrap">TOTAL AMOUNT</th>
@@ -125,6 +127,19 @@ function Main() {
                         })}
                       >
                         {$h.capitalizeFirstLetter(value.SalesOrderStatus)}
+                      </div>
+                    </td>
+                    <td className="text-center">
+                      <div
+                        className={classnames({
+                          "flex items-center justify-center whitespace-nowrap": true,
+                          "text-success": value.InvoiceStatus == "Paid",
+                          "text-info": value.InvoiceStatus == "refund",
+                          "text-danger": value.InvoiceStatus == "Unpaid"
+                        })}
+                      >
+                        <Lucide icon="CheckSquare" className="w-4 h-4 mr-2" />
+                        {$h.capitalizeFirstLetter(value.InvoiceStatus)}
                       </div>
                     </td>
                     <td className="text-center">
@@ -355,12 +370,19 @@ function Main() {
                 <div className="flex items-center border-b border-slate-200/60 dark:border-darkmode-400 pb-5 mb-5">
                   <div className="font-medium text-base truncate">Payment Details</div>
                 </div>
-
-                <div className="flex items-center mt-3">
-                  <Lucide icon="CreditCard" className="w-4 h-4 text-slate-500 mr-2" />
-                  Total Amount ( {invoice?.InvoiceQty} Qty )
+                <div className="flex items-center">
+                  <Lucide icon="Clipboard" className="w-4 h-4 text-slate-500 mr-2" />
+                  Payment Status:
                   <div className="ml-auto">
-                    {$h.formatCurrency(invoice?.TotalAmount ? invoice.TotalAmount : 0)}
+                    {invoice?.InvoiceStatus !== "Paid" ? (
+                      <span className="bg-danger/20 text-danger rounded px-2 ml-1">
+                        {invoice?.InvoiceStatus}
+                      </span>
+                    ) : (
+                      <span className="bg-success/20 text-success rounded px-2 ml-1">
+                        {invoice?.InvoiceStatus}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center mt-3">
@@ -370,15 +392,11 @@ function Main() {
                     {$h.formatCurrency(invoice?.TaxAmount ? invoice.TaxAmount : 0)}
                   </div>
                 </div>
-                <div className="flex items-center border-t border-slate-200/60 dark:border-darkmode-400 pt-5 mt-5 font-medium">
+                <div className="flex items-center mt-3">
                   <Lucide icon="CreditCard" className="w-4 h-4 text-slate-500 mr-2" />
-                  Grand Total:
+                  Total Amount ( Inc. Tax )
                   <div className="ml-auto">
-                    {$h.formatCurrency(
-                      invoice?.TotalAmount && invoice?.TaxAmount
-                        ? invoice?.TotalAmount + invoice?.TaxAmount
-                        : 0
-                    )}
+                    {$h.formatCurrency(invoice?.TotalAmount ? invoice.TotalAmount : 0)}
                   </div>
                 </div>
               </div>

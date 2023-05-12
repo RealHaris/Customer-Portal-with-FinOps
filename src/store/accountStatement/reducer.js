@@ -1,14 +1,16 @@
 import {
   GET_ACCOUNT_STATEMENT,
   GET_ACCOUNT_STATEMENT_FAIL,
-  GET_ACCOUNT_STATEMENT_SUCCESS
-} from "./actiontypes";
+  GET_ACCOUNT_STATEMENT_SUCCESS,
+  SAVE_DATE_RANGE
+} from "./actionTypes";
 
 const INIT_STATE = {
   accountStatement: null,
   error: null,
   loading: false,
-  fetched: false
+  fetched: false,
+  dateRange: ""
 };
 
 const AccountStatementReducer = (state = INIT_STATE, action) => {
@@ -18,7 +20,6 @@ const AccountStatementReducer = (state = INIT_STATE, action) => {
         ...state,
         loading: true
       };
-
     case GET_ACCOUNT_STATEMENT_SUCCESS:
       return {
         ...state,
@@ -26,12 +27,16 @@ const AccountStatementReducer = (state = INIT_STATE, action) => {
 
         accountStatement: action.payload
       };
-
     case GET_ACCOUNT_STATEMENT_FAIL:
       return {
         ...state,
         loading: false,
         error: action.payload
+      };
+    case SAVE_DATE_RANGE:
+      return {
+        ...state,
+        dateRange: action.payload
       };
 
     default:

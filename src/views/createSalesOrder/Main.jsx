@@ -14,15 +14,16 @@ import { helper as $h } from "@/utils";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { LoadingIcon } from "@/base-components";
 import Select from "react-select";
+import { getProductList as onProductListCall } from "../../helpers/backend_helper";
 import toastr from "toastr";
 import { useFormik } from "formik";
 
 function Main() {
   const dispatch = useDispatch();
 
-  const { productList } = useSelector((state) => ({
-    productList: state.ProductListReducer?.productList
-  }));
+  // const { productList } = useSelector((state) => ({
+  //   productList: state.ProductListReducer?.productList
+  // }));
 
   const [getProductList, setProductList] = useState([{}]);
 
@@ -61,33 +62,76 @@ function Main() {
     }
   }, [added, error]);
 
-  useEffect(() => {
-    dispatch(onGetProductList(""));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   var params = `?perPage=10&page=${currentPage}`;
+  //   dispatch(onGetProductList(params));
+  //   setCurrentPage(currentPage + 1);
+  // }, [dispatch]);
 
-  useEffect(() => {
-    if (!$h.isNullObject(productList) && productList.ItemsList.length > 0) {
-      PopulateProducts(productList.ItemsList);
-    }
-  }, [productList]);
+  // useEffect(() => {
+  //   if (!$h.isNullObject(productList) && productList.ItemsList.length > 0) {
+  //     PopulateProducts(productList.ItemsList);
+  //   }
+  // }, [productList]);
 
-  const PopulateProducts = (itemsList) => {
-    const newOptions = itemsList.map((rec) => ({
-      value: `${rec.ItemId}`,
-      label: `${rec.ItemName}`,
-      ItemUnit: `${rec.ItemUnit}`,
-      ItemTaxGroup: `${rec.ItemTaxGroup}`
-    }));
-    setProductList((prevOptions) => [...prevOptions, ...newOptions]);
-  };
+  // const PopulateProducts = (itemsList) => {
+  //   const newOptions = itemsList.map((rec) => ({
+  //     value: `${rec.ItemId}`,
+  //     label: `${rec.ItemName}`,
+  //     ItemUnit: `${rec.ItemUnit}`,
+  //     ItemTaxGroup: `${rec.ItemTaxGroup}`
+  //   }));
+  //   // setProductList((prevOptions) => [...prevOptions, ...newOptions]);
+  //   setProductList(newOptions);
+  // };
 
-  const loadMoreOptions = async (searchValue, loadedOptions, { page }) => {
-    dispatch(onGetProductList(`?perPage=10&page=${currentPage + 1}`));
-    PopulateProducts(productList.ItemsList);
-    setCurrentPage(currentPage + 1);
+  // const loadMoreOptions = async (search, loadedOptions) => {
+  //   var params = `?perPage=10&page=${currentPage}`;
+
+  //   const response = await onProductListCall(params);
+
+  //   if (response) {
+  //     console.log("response", response);
+  //     const { ItemsList } = response;
+  //     const newOptions = ItemsList.map((rec) => ({
+  //       value: `${rec.ItemId}`,
+  //       label: `${rec.ItemName}`,
+  //       ItemUnit: `${rec.ItemUnit}`,
+  //       ItemTaxGroup: `${rec.ItemTaxGroup}`
+  //     }));
+  //     setProductList((prevOptions) => [...prevOptions, ...newOptions]);
+  //     setCurrentPage(currentPage + 1);
+  //   }
+
+  //   return {
+  //     options: [...prevOptions, ...newOptions],
+  //     hasMore: getProductList.length <= response.TotalRecords
+  //   };
+  // };
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const loadOptions = async (inputValue, loadedOptions, { page }) => {
+    // const response = await fetch(`https://your-api.com/items?search=\${inputValue}&page=\${page}`);
+    // const responseJSON = await response.json();
+    var params = `?perPage=10&page=${page}&searchItem=${inputValue}`;
+    const response = await onProductListCall(params);
+
+    setProductList(response.ItemsList);
+
     return {
-      options: getProductList,
-      hasMore: getProductList.length <= productList.TotalRecords
+      options: response.ItemsList.map((rec) => ({
+        value: `${rec.ItemId}`,
+        label: `${rec.ItemName}`,
+        ItemUnit: `${rec.ItemUnit}`,
+        ItemTaxGroup: `${rec.ItemTaxGroup}`
+        // ItemName: `${rec.ItemName}`
+      })),
+
+      hasMore: response.TotalRecords > page * 10,
+      additional: {
+        page: page + 1
+      }
     };
   };
 
@@ -101,6 +145,7 @@ function Main() {
           SalesQty: "",
           SalesUnit: "",
           ItemTaxGroup: ""
+          // ItemName: ""
         }
       ]
     },
@@ -119,7 +164,11 @@ function Main() {
       order_type: Yup.string().required("Order Type is required"),
       sales_order_lines: Yup.array().of(
         Yup.object().shape({
-          ItemId: Yup.string().required("Item is required"),
+          ItemId: Yup.object().shape({
+            value: Yup.string().required("Product is required"),
+            label: Yup.string().required("Product is required")
+          }),
+
           SalesQty: Yup.string().required("Quantity is required"),
           SalesUnit: Yup.string().required("Unit is required"),
           ItemTaxGroup: Yup.string().required("Tax Group is required")
@@ -128,7 +177,18 @@ function Main() {
     }),
 
     onSubmit: (values) => {
-      dispatch(onAddNewOrderManagement(validation.values));
+      const body = {
+        order_type: values.order_type,
+        shipping_date: values.shipping_date,
+        sales_order_lines: values.sales_order_lines.map((rec) => ({
+          ItemId: rec.ItemId.value,
+          SalesQty: rec.SalesQty,
+          SalesUnit: rec.SalesUnit,
+          ItemTaxGroup: rec.ItemTaxGroup
+        }))
+      };
+
+      dispatch(onAddNewOrderManagement(body));
     }
   });
 
@@ -162,21 +222,29 @@ function Main() {
         SalesUnit: "",
         SalesQty: "",
         ItemTaxGroup: ""
+        // ItemName: ""
       }
     ]);
   };
 
   const onSelectChangeHandle = (rec, index) => {
-    const filterProduct = getProductList.find((val) => val.value == rec.value);
-
-    validation.setFieldValue(`sales_order_lines.${index}.SalesUnit`, filterProduct.ItemUnit);
-
-    validation.setFieldValue(`sales_order_lines.${index}.ItemId`, rec.value);
-
     console.log("rec", rec);
-    console.log("filterProduct", filterProduct);
 
-    validation.setFieldValue(`sales_order_lines.${index}.ItemTaxGroup`, filterProduct.ItemTaxGroup);
+    // const filterProduct = getProductList.find((val) => val.value == rec.value);
+
+    validation.setFieldValue(`sales_order_lines.${index}.SalesUnit`, rec.ItemUnit);
+    validation.setFieldValue(`sales_order_lines.${index}.ItemId`, {
+      value: rec.value,
+      label: rec.label
+    });
+    validation.setFieldValue(`sales_order_lines.${index}.ItemTaxGroup`, rec.ItemTaxGroup);
+
+    // validation.setFieldValue(`sales_order_lines.${index}.ItemId`, rec.value);
+
+    // console.log("rec", rec);
+    // console.log("filterProduct", filterProduct);
+
+    // validation.setFieldValue(`sales_order_lines.${index}.ItemTaxGroup`, filterProduct.ItemTaxGroup);
   };
 
   const deleteProduct = (index, rec) => {
@@ -188,6 +256,7 @@ function Main() {
   };
 
   const getName = (rec) => {
+    console.log("getName", rec);
     if (rec.ItemId) {
       let s = getProductList.find((val) => val.value == rec.ItemId);
 
@@ -204,6 +273,8 @@ function Main() {
         onSubmit={(e) => {
           e.preventDefault();
           setsubmission(true);
+
+          console.log("validation", validation);
           validation.handleSubmit();
           return false;
         }}
@@ -341,7 +412,7 @@ function Main() {
                                 return (
                                   <tr key={index}>
                                     <td className="whitespace-nowrap">
-                                      <AsyncPaginate
+                                      {/*<AsyncPaginate
                                         name={`sales_order_lines.${index}.ItemId`}
                                         loadOptions={loadMoreOptions}
                                         value={{
@@ -349,14 +420,27 @@ function Main() {
                                           label: `${getName(rec)}`
                                         }}
                                         className="login__input form-control py-2 px-4 block min-w-[20rem] "
-                                        // type="number"
-                                        additional={{
-                                          page: currentPage
-                                        }}
                                         onChange={(e) => {
                                           onSelectChangeHandle(e, index);
                                         }}
                                         options={getProductList}
+                                      />*/}
+
+                                      <AsyncPaginate
+                                        className="form-control py-2 px-4 block min-w-[20rem] "
+                                        name={`sales_order_lines.${index}.ItemId`}
+                                        value={rec.ItemId}
+                                        loadOptions={loadOptions}
+                                        // getOptionValue={(option) => option.value}
+                                        // getOptionLabel={(option) => option.label}
+                                        onChange={(e) => {
+                                          onSelectChangeHandle(e, index);
+                                        }}
+                                        onInputChange={setSearchQuery}
+                                        placeholder="Search items"
+                                        additional={{
+                                          page: 1
+                                        }}
                                       />
 
                                       {submission &&
@@ -367,6 +451,7 @@ function Main() {
                                             index
                                           ].hasOwnProperty("ItemId")
                                             ? validation.errors.sales_order_lines[index].ItemId
+                                                .value
                                             : ""}
                                         </span>
                                       ) : null}

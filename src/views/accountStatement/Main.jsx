@@ -2,286 +2,40 @@ import { helper as $h, keyValue as kv } from "@/utils";
 import { Fragment, useEffect, useState } from "react";
 import { Litepicker, Lucide } from "@/base-components";
 import { ReactTabulator, reactFormatter } from "react-tabulator";
+import { getAccountStatement, saveDateRange } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 
 import Select from "react-select";
-import { getAccountStatement } from "../../store/actions";
 import moment from "moment";
 
 const Main = () => {
   function InitialDateRange() {
     var date = new Date();
-    var lastYear = date.getFullYear() - 1;
-    var startDate = moment(`${lastYear}-01-01`).format("YYYY-MM-DD");
+    // last 7 days date
+    var startDate = moment(date).subtract(7, "days").format("YYYY-MM-DD");
+    // todays date
     var endDate = moment(new Date()).format("YYYY-MM-DD");
     return `${startDate} - ${endDate}`;
   }
 
-  const [getDateRange, setDateRange] = useState(InitialDateRange);
+  const { accountStatement, dateRange } = useSelector((state) => state.AccountStatementReducer);
+
+  const [getDateRange, setDateRange] = useState(dateRange === "" ? InitialDateRange() : dateRange);
 
   const [getCurrentPage, setCurrentPage] = useState(1);
 
   const [getPerPage, setPerPage] = useState({ value: 10, label: "10" });
   const dispatch = useDispatch();
 
-  const { accountStatement, error, loading, fetched } = useSelector(
-    (state) => state.AccountStatementReducer
-  );
-
   useEffect(() => {
-    // var params = `?perPage=10&page=1&startDate=1/19/2021&endDate=1/23/2023`;
-
     let param = `?perPage=${getPerPage.value}&page=${getCurrentPage}`;
     var date = getDateRange.split(" - ");
     var startDate = moment(date[0]).format("MM/DD/YYYY");
     var endDate = moment(date[1]).format("MM/DD/YYYY");
     param += `&startDate=${startDate}&endDate=${endDate}`;
     dispatch(getAccountStatement(param));
+    dispatch(saveDateRange(getDateRange));
   }, [dispatch, getCurrentPage]);
-
-  // useEffect(() => {
-  //   console.log("getPerPage", getPerPage, getCurrentPage);
-
-  //   let param = `?perPage=${getPerPage.value}&page=${getCurrentPage}`;
-  //   var date = getDateRange.split(" - ");
-  //   var startDate = moment(date[0]).format("MM/DD/YYYY");
-  //   var endDate = moment(date[1]).format("MM/DD/YYYY");
-
-  // }, [getCurrentPage]);
-
-  // useEffect(() => {
-  //   if (accountStatement) {
-  //     console.log("account Statement ", accountStatement);
-  //   }
-  // }, [accountStatement]);
-
-  // const list = [
-  //   {
-  //     TransDate: "2021-10-05T12:00:00",
-  //     DueDate: "2021-10-15T12:00:00",
-  //     InvoiceId: "I30008760",
-  //     Description: "I30008760 - S2185242 - Robert Amaro",
-  //     DebitAmount: 13.23,
-  //     CreditAmount: 0,
-  //     BalanceAmount: 13.23
-  //   },
-  //   {
-  //     TransDate: "2021-10-08T12:00:00",
-  //     DueDate: "2021-10-15T12:00:00",
-  //     InvoiceId: "I30009133",
-  //     Description: "I30009133 - S2185613 - Robert Amaro",
-  //     DebitAmount: 10.84,
-  //     CreditAmount: 0,
-  //     BalanceAmount: 24.07
-  //   },
-  //   {
-  //     TransDate: "2021-10-12T12:00:00",
-  //     DueDate: "2021-10-12T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Payment",
-  //     DebitAmount: 0,
-  //     CreditAmount: -13.23,
-  //     BalanceAmount: 10.84
-  //   },
-  //   {
-  //     TransDate: "2021-10-12T12:00:00",
-  //     DueDate: "2021-10-15T12:00:00",
-  //     InvoiceId: "I30009371",
-  //     Description: "I30009371 - S2185855 - Robert Amaro",
-  //     DebitAmount: 13.21,
-  //     CreditAmount: 0,
-  //     BalanceAmount: 24.05
-  //   },
-  //   {
-  //     TransDate: "2021-10-13T12:00:00",
-  //     DueDate: "2021-10-13T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Payment",
-  //     DebitAmount: 0,
-  //     CreditAmount: -10.84,
-  //     BalanceAmount: 13.21
-  //   },
-  //   {
-  //     TransDate: "2021-11-04T12:00:00",
-  //     DueDate: "2021-11-04T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Payment",
-  //     DebitAmount: 0,
-  //     CreditAmount: -13.21,
-  //     BalanceAmount: 0
-  //   },
-  //   {
-  //     TransDate: "2021-12-31T12:00:00",
-  //     DueDate: "2021-12-31T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Boots - Amaro, Robert",
-  //     DebitAmount: 0,
-  //     CreditAmount: -21.28,
-  //     BalanceAmount: -21.28
-  //   },
-  //   {
-  //     TransDate: "2022-01-02T12:00:00",
-  //     DueDate: "2022-01-02T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Boots - Amaro, Robert",
-  //     DebitAmount: 0,
-  //     CreditAmount: -21.28,
-  //     BalanceAmount: -42.56
-  //   },
-  //   {
-  //     TransDate: "2022-01-02T12:00:00",
-  //     DueDate: "2022-01-02T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Boots - Amaro, Robert",
-  //     DebitAmount: 21.28,
-  //     CreditAmount: 0,
-  //     BalanceAmount: -21.28
-  //   },
-  //   {
-  //     TransDate: "2022-01-09T12:00:00",
-  //     DueDate: "2022-01-09T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Boots - Amaro, Robert",
-  //     DebitAmount: 0,
-  //     CreditAmount: -21.28,
-  //     BalanceAmount: -42.56
-  //   },
-  //   {
-  //     TransDate: "2022-01-16T12:00:00",
-  //     DueDate: "2022-01-16T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Boots - Amaro, Robert",
-  //     DebitAmount: 0,
-  //     CreditAmount: -21.28,
-  //     BalanceAmount: -63.84
-  //   },
-  //   {
-  //     TransDate: "2022-01-23T12:00:00",
-  //     DueDate: "2022-01-23T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Boots - Amaro, Robert",
-  //     DebitAmount: 0,
-  //     CreditAmount: -21.28,
-  //     BalanceAmount: -85.12
-  //   },
-  //   {
-  //     TransDate: "2022-01-25T12:00:00",
-  //     DueDate: "2022-01-25T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Record Employee  Boot Cost Portion",
-  //     DebitAmount: 106.91,
-  //     CreditAmount: 0,
-  //     BalanceAmount: 21.79
-  //   },
-  //   {
-  //     TransDate: "2022-01-30T12:00:00",
-  //     DueDate: "2022-01-30T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Boots - Amaro, Robert",
-  //     DebitAmount: 0,
-  //     CreditAmount: -21.28,
-  //     BalanceAmount: 0.51
-  //   },
-  //   {
-  //     TransDate: "2022-05-03T12:00:00",
-  //     DueDate: "2022-05-03T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Payment",
-  //     DebitAmount: 0,
-  //     CreditAmount: -0.51,
-  //     BalanceAmount: 0
-  //   },
-  //   {
-  //     TransDate: "2022-06-09T12:00:00",
-  //     DueDate: "2022-07-15T12:00:00",
-  //     InvoiceId: "I30031547",
-  //     Description: "I30031547 - S2204772 - Robert Amaro",
-  //     DebitAmount: 5.41,
-  //     CreditAmount: 0,
-  //     BalanceAmount: 5.41
-  //   },
-  //   {
-  //     TransDate: "2022-07-06T12:00:00",
-  //     DueDate: "2022-07-06T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Payment",
-  //     DebitAmount: 0,
-  //     CreditAmount: -5.41,
-  //     BalanceAmount: 0
-  //   },
-  //   {
-  //     TransDate: "2022-07-27T12:00:00",
-  //     DueDate: "2022-08-15T12:00:00",
-  //     InvoiceId: "I30035472",
-  //     Description: "I30035472 - S2208174 - Robert Amaro",
-  //     DebitAmount: 10.84,
-  //     CreditAmount: 0,
-  //     BalanceAmount: 10.84
-  //   },
-  //   {
-  //     TransDate: "2022-08-01T12:00:00",
-  //     DueDate: "2022-08-01T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "S2208556, Cash payment",
-  //     DebitAmount: 0,
-  //     CreditAmount: -1.08,
-  //     BalanceAmount: 9.76
-  //   },
-  //   {
-  //     TransDate: "2022-08-01T12:00:00",
-  //     DueDate: "2022-09-15T12:00:00",
-  //     InvoiceId: "I30035872",
-  //     Description: "I30035872 - S2208556 - Robert Amaro",
-  //     DebitAmount: 1.08,
-  //     CreditAmount: 0,
-  //     BalanceAmount: 10.84
-  //   },
-  //   {
-  //     TransDate: "2022-08-16T12:00:00",
-  //     DueDate: "1900-01-01T12:00:00",
-  //     InvoiceId: "I30035472",
-  //     Description: "",
-  //     DebitAmount: 0,
-  //     CreditAmount: -10.84,
-  //     BalanceAmount: 0
-  //   },
-  //   {
-  //     TransDate: "2022-08-16T12:00:00",
-  //     DueDate: "1900-01-01T12:00:00",
-  //     InvoiceId: "I30035472",
-  //     Description: "",
-  //     DebitAmount: 10.84,
-  //     CreditAmount: 0,
-  //     BalanceAmount: 10.84
-  //   },
-  //   {
-  //     TransDate: "2022-08-16T12:00:00",
-  //     DueDate: "2022-08-16T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "Payment",
-  //     DebitAmount: 0,
-  //     CreditAmount: -10.84,
-  //     BalanceAmount: 0
-  //   },
-  //   {
-  //     TransDate: "2022-10-05T12:00:00",
-  //     DueDate: "2022-10-05T12:00:00",
-  //     InvoiceId: "",
-  //     Description: "S2213055, Cash payment",
-  //     DebitAmount: 0,
-  //     CreditAmount: -5.41,
-  //     BalanceAmount: -5.41
-  //   },
-  //   {
-  //     TransDate: "2022-10-05T12:00:00",
-  //     DueDate: "2022-11-15T12:00:00",
-  //     InvoiceId: "I30041607",
-  //     Description: "I30041607 - S2213055 - Robert Amaro",
-  //     DebitAmount: 5.41,
-  //     CreditAmount: 0,
-  //     BalanceAmount: 0
-  //   }
-  // ];
 
   const columns = [
     {
@@ -308,21 +62,21 @@ const Main = () => {
     },
 
     {
-      title: "DebitAmount",
+      title: "Debit Amount",
       field: "DebitAmount",
 
       formatter: reactFormatter(<DebitAmountFormatter />)
     },
 
     {
-      title: "CreditAmount",
+      title: "Credit Amount",
       field: "CreditAmount",
 
       formatter: reactFormatter(<CreditAmountFormatter />)
     },
 
     {
-      title: "BalanceAmount",
+      title: "Balance Amount",
       field: "BalanceAmount",
 
       formatter: reactFormatter(<BalanceAmountFormatter />)
@@ -376,12 +130,7 @@ const Main = () => {
 
   const handleFilterFunction = () => {
     let param = `?perPage=${getPerPage.value}&page=1`;
-    // var date = getDateRange.split("-");
-    // console.log("date", date);
-    // var date = "2023-05-10 - 2023-06-14";
     var date = getDateRange.split(" - ");
-    console.log("date", date);
-
     var startDate = moment(date[0]).format("MM/DD/YYYY");
     var endDate = moment(date[1]).format("MM/DD/YYYY");
     param += `&startDate=${startDate}&endDate=${endDate}`;
@@ -389,6 +138,7 @@ const Main = () => {
       setCurrentPage(1);
     } else {
       dispatch(getAccountStatement(param));
+      dispatch(saveDateRange(getDateRange));
     }
   };
 
@@ -396,8 +146,9 @@ const Main = () => {
     let param = `?perPage=${getPerPage.value}&page=1`;
     // find last year date
     var date = new Date();
-    var lastYear = date.getFullYear() - 1;
-    var startDate = moment(`${lastYear}-01-01`).format("MM/DD/YYYY");
+
+    var startDate = moment(date).subtract(7, "days").format("MM/DD/YYYY");
+
     // todays date
     var endDate = moment(new Date()).format("MM/DD/YYYY");
     param += `&startDate=${startDate}&endDate=${endDate}`;
@@ -409,6 +160,7 @@ const Main = () => {
       setCurrentPage(1);
     } else {
       dispatch(getAccountStatement(param));
+      dispatch(saveDateRange(`${newformatStartDate} - ${newformatEndDate}`));
     }
   };
 
@@ -423,6 +175,7 @@ const Main = () => {
       setCurrentPage(1);
     } else {
       dispatch(getAccountStatement(param));
+      dispatch(saveDateRange(getDateRange));
     }
   };
 
@@ -440,9 +193,6 @@ const Main = () => {
                 value={getDateRange}
                 placeholder="Search By Date Placed"
                 onChange={setDateRange}
-                // onChange={(date) => {
-                //   console.log(date);
-                // }}
                 options={{
                   autoApply: false,
                   singleMode: false,
@@ -523,8 +273,6 @@ const Main = () => {
                     </li>
 
                     <li className="page-item">
-                      {/* <a className="page-link" href="#" onClick ={setCurrentPage(accountStatement.nextPage)} > */}
-
                       <a
                         className="page-link"
                         href="#"

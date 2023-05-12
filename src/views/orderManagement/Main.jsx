@@ -90,7 +90,6 @@ function Main() {
                 <th className="text-center whitespace-nowrap">SALES QTY</th>
                 <th className="text-center whitespace-nowrap">TOTAL AMOUNT</th>
                 <th className="text-center whitespace-nowrap">DELIVERY DATE</th>
-                <th className="text-center whitespace-nowrap">PAYMENT STATUS</th>
               </tr>
             </thead>
             <tbody>
@@ -148,20 +147,6 @@ function Main() {
                     <td className="text-center">
                       <div className="whitespace-nowrap text-xs">
                         {moment(value.DeliveryDate, "MM/DD/YYYY HH:mm:ss").format("YYYY-MM-DD")}
-                      </div>
-                    </td>
-
-                    <td className="text-center">
-                      <div
-                        className={classnames({
-                          "flex items-center justify-center whitespace-nowrap": true,
-                          "text-success": value.PaymentStatus == "Paid",
-                          "text-info": value.PaymentStatus == "refund",
-                          "text-danger": value.PaymentStatus == "Unpaid"
-                        })}
-                      >
-                        <Lucide icon="CheckSquare" className="w-4 h-4 mr-2" />
-                        {$h.capitalizeFirstLetter(value.PaymentStatus)}
                       </div>
                     </td>
                   </tr>
@@ -367,31 +352,10 @@ function Main() {
                 <div className="flex items-center border-b border-slate-200/60 dark:border-darkmode-400 pb-5 mb-5">
                   <div className="font-medium text-base truncate">Payment Details</div>
                 </div>
-                <div className="flex items-center">
-                  <Lucide icon="Clipboard" className="w-4 h-4 text-slate-500 mr-2" />
-                  Payment Status:
-                  <div className="ml-auto">
-                    {orderDetails.PaymentStatus !== "Paid" ? (
-                      <span className="bg-danger/20 text-danger rounded px-2 ml-1">
-                        {orderDetails.PaymentStatus}
-                      </span>
-                    ) : (
-                      <span className="bg-success/20 text-success rounded px-2 ml-1">
-                        {orderDetails.PaymentStatus}
-                      </span>
-                    )}
-                  </div>
-                </div>
+
                 <div className="flex items-center mt-3">
                   <Lucide icon="CreditCard" className="w-4 h-4 text-slate-500 mr-2" />
                   Total Price ( {orderDetails.SalesQty} Qty )
-                  <div className="ml-auto">
-                    {$h.formatCurrency(orderDetails.TotalAmount ? orderDetails.TotalAmount : 0)}
-                  </div>
-                </div>
-                <div className="flex items-center border-t border-slate-200/60 dark:border-darkmode-400 pt-5 mt-5 font-medium">
-                  <Lucide icon="CreditCard" className="w-4 h-4 text-slate-500 mr-2" />
-                  Grand Total:
                   <div className="ml-auto">
                     {$h.formatCurrency(orderDetails.TotalAmount ? orderDetails.TotalAmount : 0)}
                   </div>

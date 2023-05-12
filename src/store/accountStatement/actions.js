@@ -1,8 +1,9 @@
 import {
   GET_ACCOUNT_STATEMENT,
   GET_ACCOUNT_STATEMENT_FAIL,
-  GET_ACCOUNT_STATEMENT_SUCCESS
-} from "./actiontypes";
+  GET_ACCOUNT_STATEMENT_SUCCESS,
+  SAVE_DATE_RANGE
+} from "./actionTypes";
 
 export const getAccountStatement = (rec) => ({
   type: GET_ACCOUNT_STATEMENT,
@@ -17,4 +18,9 @@ export const getAccountStatementSuccess = (invoices) => ({
 export const getAccountStatementFail = (error) => ({
   type: GET_ACCOUNT_STATEMENT_FAIL,
   payload: error
+});
+
+export const saveDateRange = (dateRange) => ({
+  type: SAVE_DATE_RANGE,
+  payload: dateRange
 });
